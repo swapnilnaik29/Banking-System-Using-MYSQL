@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Bank of VIT</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>🏦 Bank of VIT - Admin Panel</h1>
+            </div>
+            <div class="nav-links">
+                <a href="/admin-dashboard">Dashboard</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <h1>Admin Dashboard</h1>
+                <p>Manage accounts, loans, and view statistics</p>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="container">
+                <!-- Statistics -->
+                <div class="dashboard-grid" id="statsContainer"></div>
+
+                <!-- Tabs -->
+                <div class="card">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem; flex-wrap: wrap;">
+                        <button class="tab-btn active" onclick="showTab('pending-accounts')">Pending Accounts</button>
+                        <button class="tab-btn" onclick="showTab('pending-loans')">Pending Loans</button>
+                        <button class="tab-btn" onclick="showTab('all-accounts')">All Accounts</button>
+                        <button class="tab-btn" onclick="showTab('all-loans')">All Loans</button>
+                    </div>
+
+                    <!-- Pending Accounts Tab -->
+                    <div id="pending-accountsTab" class="tab-content active">
+                        <h2>Pending Account Approvals</h2>
+                        <div id="pendingAccountsList"></div>
+                    </div>
+
+                    <!-- Pending Loans Tab -->
+                    <div id="pending-loansTab" class="tab-content">
+                        <h2>Pending Loan Applications</h2>
+                        <div id="pendingLoansList"></div>
+                    </div>
+
+                    <!-- All Accounts Tab -->
+                    <div id="all-accountsTab" class="tab-content">
+                        <h2>All Accounts</h2>
+                        <div id="allAccountsList"></div>
+                    </div>
+
+                    <!-- All Loans Tab -->
+                    <div id="all-loansTab" class="tab-content">
+                        <h2>All Loans</h2>
+                        <div id="allLoansList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Bank of VIT</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>🏦 The Bank of VIT</h1>
+            </div>
+            <div class="nav-links">
+                <a href="/dashboard">Dashboard</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <h1>Welcome to Your Dashboard</h1>
+                <p>Manage your accounts and transactions</p>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="container">
+                <!-- Quick Stats -->
+                <div class="dashboard-grid" id="statsContainer"></div>
+
+                <!-- Tabs -->
+                <div class="card">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem;">
+                        <button class="tab-btn active" onclick="showTab('accounts')">My Accounts</button>
+                        <button class="tab-btn" onclick="showTab('transfer')">Transfer Money</button>
+                        <button class="tab-btn" onclick="showTab('loans')">My Loans</button>
+                        <button class="tab-btn" onclick="showTab('transactions')">Transactions</button>
+                    </div>
+
+                    <!-- Accounts Tab -->
+                    <div id="accountsTab" class="tab-content active">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2 style="margin: 0;">My Accounts</h2>
+                            <button class="btn btn-primary" onclick="showCreateAccountModal()">Create New Account</button>
+                        </div>
+                        <div id="accountsList"></div>
+                    </div>
+
+                    <!-- Transfer Tab -->
+                    <div id="transferTab" class="tab-content">
+                        <h2>Transfer Money</h2>
+                        <div id="transferAlert" style="display: none;"></div>
+                        <form id="transferForm" style="max-width: 600px;">
+                            <div class="form-group">
+                                <label>From Account</label>
+                                <select id="fromAccount" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>To Account Number</label>
+                                <input type="text" id="toAccountNumber" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount</label>
+                                <input type="number" id="transferAmount" step="0.01" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description (Optional)</label>
+                                <input type="text" id="transferDescription">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Transfer Money</button>
+                        </form>
+                    </div>
+
+                    <!-- Loans Tab -->
+                    <div id="loansTab" class="tab-content">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2 style="margin: 0;">My Loans</h2>
+                            <button class="btn btn-primary" onclick="showApplyLoanModal()">Apply for Loan</button>
+                        </div>
+                        <div id="loansList"></div>
+                    </div>
+
+                    <!-- Transactions Tab -->
+                    <div id="transactionsTab" class="tab-content">
+                        <h2>Recent Transactions</h2>
+                        <div class="form-group" style="max-width: 400px;">
+                            <label>Select Account</label>
+                            <select id="transactionAccount" onchange="loadTransactions()">
+                                <option value="">Select an account</option>
+                            </select>
+                        </div>
+                        <div id="transactionsList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Account Modal -->
+    <div id="createAccountModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Account</h2>
+                <button class="close-btn" onclick="closeModal('createAccountModal')">&times;</button>
+            </div>
+            <div id="createAccountAlert" style="display: none;"></div>
+            <form id="createAccountForm">
+                <div class="form-group">
+                    <label>Account Type</label>
+                    <select id="accountType" required>
+                        <option value="">Select Type</option>
+                        <option value="savings">Savings Account</option>
+                        <option value="current">Current Account</option>
+                        <option value="international">International Account (USD)</option>
+                    </select>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('createAccountModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Apply Loan Modal -->
+    <div id="applyLoanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Apply for Loan</h2>
+                <button class="close-btn" onclick="closeModal('applyLoanModal')">&times;</button>
+            </div>
+            <div id="applyLoanAlert" style="display: none;"></div>
+            <form id="applyLoanForm">
+                <div class="form-group">
+                    <label>Select Account</label>
+                    <select id="loanAccount" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Loan Type</label>
+                    <select id="loanType" required>
+                        <option value="">Select Type</option>
+                        <option value="home">Home Loan (8.5% p.a.)</option>
+                        <option value="education">Education Loan (9.0% p.a.)</option>
+                        <option value="personal">Personal Loan (12.5% p.a.)</option>
+                        <option value="vehicle">Vehicle Loan (10.0% p.a.)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Loan Amount</label>
+                    <input type="number" id="loanAmount" step="1000" min="10000" required>
+                </div>
+                <div class="form-group">
+                    <label>Tenure (Months)</label>
+                    <input type="number" id="tenureMonths" min="6" max="360" required>
+                </div>
+                <div class="form-group">
+                    <label>Purpose</label>
+                    <textarea id="loanPurpose" required></textarea>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary">Submit Application</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('applyLoanModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Deposit Money</h2>
+                <button class="close-btn" onclick="closeModal('depositModal')">&times;</button>
+            </div>
+            <div id="depositAlert" style="display: none;"></div>
+            <form id="depositForm">
+                <input type="hidden" id="depositAccountId">
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" id="depositAmount" step="0.01" min="1" required>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-success">Deposit</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('depositModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>
